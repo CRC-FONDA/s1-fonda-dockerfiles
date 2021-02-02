@@ -1,0 +1,4 @@
+#urrently not working on airflow 2.0.0
+#airflow-exporter
+ldap3
+python-ldap

@@ -1,0 +1,5 @@
+ kubernetes:latest 
+ workflow-aggregator:latest
+ git:latest
+ ldap:latest
+ configuration-as-code:latest
