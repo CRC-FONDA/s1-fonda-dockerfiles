@@ -1,5 +1,8 @@
- kubernetes:latest 
- workflow-aggregator:latest
- git:latest
- ldap:latest
- configuration-as-code:latest
+kubernetes:latest 
+workflow-aggregator:latest
+git:latest
+ldap:latest
+configuration-as-code:latest
+blueocean:latest
+github-branch-source:latest
+sonar:latest
