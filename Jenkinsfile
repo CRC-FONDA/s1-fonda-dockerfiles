@@ -47,7 +47,11 @@ pipeline {
             }
         }
 
-        stage('Build images') {
+        stage('Build and push images') {
+            // only build/push images of main branch
+            //when {
+            //    branch 'main'
+            //}
             agent {
                 kubernetes {
                     yamlFile 'jenkins-pod-docker.yaml'
@@ -55,11 +59,18 @@ pipeline {
             }
             steps {
                 container('docker') {
-                    sh """
-                    docker version
-                    docker build jenkins/ -t fondahub/jenkins:build-$BUILD_NUMBER
-                    docker tag fondahub/jenkins:build-$BUILD_NUMBER fondahub/jenkins:latest
-                    """
+                    withCredentials([[
+                        $class: 'UsernamePasswordMultiBinding',
+                        credentialsId: 'fondahub-dockerhub', usernameVariable: 'DOCKERUSER', passwordVariable: 'DOCKERPASS'
+                    ]]) {
+                        sh """
+                        echo "$DOCKERPASS" | docker login -u "$DOCKERUSER" --password-stdin
+                        docker build jenkins/ -t fondahub/jenkins:build-$BUILD_NUMBER
+                        docker tag fondahub/jenkins:build-$BUILD_NUMBER fondahub/jenkins:latest
+                        docker push fondahub/jenkins:build-$BUILD_NUMBER
+                        docker push fondahub/jenkins:latest
+                        """
+                    }
                 }
             }
         }
