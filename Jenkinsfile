@@ -8,13 +8,13 @@ pipeline {
                 stage('Jenkins') {
                     agent {
                         kubernetes {
-                            yamlFile 'jenkins-pod.yaml'
+                            yamlFile 'jenkins-pod-hadolint.yaml'
                         }
                     }
                     steps {
                         // use hadolint container
                         container('hadolint') {
-                            sh 'hadolint jenkins/Dockerfile | tee -a hadolint_lint.txt'
+                            sh 'hadolint jenkins/Dockerfile | tee -a hadolint_jenkins.txt'
                         }
                     }
                     // store hadolint linting results
@@ -28,13 +28,13 @@ pipeline {
                 stage('Spark') {
                     agent {
                         kubernetes {
-                            yamlFile 'jenkins-pod.yaml'
+                            yamlFile 'jenkins-pod-hadolint.yaml'
                         }
                     }
                     steps {
                         // use hadolint container
                         container('hadolint') {
-                            sh 'hadolint spark/python-s3/Dockerfile | tee -a hadolint_lint.txt'
+                            sh 'hadolint spark/python-s3/Dockerfile | tee -a hadolint_spark.txt'
                         }
                     }
                     // store hadolint linting results
@@ -48,8 +48,13 @@ pipeline {
         }
 
         stage('Build images') {
+            agent {
+                kubernetes {
+                    yamlFile 'jenkins-pod-docker.yaml'
+                }
+            }
             steps {
-                echo "TODO"
+                sh "docker info && docker build jenkins/ -f Dockerfile -t fondahub/jenkins:build-$BUILD_NUMBER"
             }
         }
     }
