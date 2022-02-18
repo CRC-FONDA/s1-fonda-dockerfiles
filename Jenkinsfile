@@ -54,7 +54,9 @@ pipeline {
                 }
             }
             steps {
-                sh "docker info && docker build jenkins/ -f Dockerfile -t fondahub/jenkins:build-$BUILD_NUMBER"
+                container('docker') {
+                    sh "docker info && docker build jenkins/ -f Dockerfile -t fondahub/jenkins:build-$BUILD_NUMBER"
+                }
             }
         }
     }
