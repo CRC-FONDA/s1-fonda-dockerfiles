@@ -3,12 +3,12 @@
 def dockerfiles = ['jenkins', 'airflow']
 
 def generateLintingStagesMap = dockerfiles.collectEntries {
-    ["${dfile}": generateLintingStage(dfile)]
+    ["${it}": generateLintingStage(it)]
 }
 
-def generateLintingStage(dfile) {
+def generateLintingStage(service) {
     return {
-        stage("lint-${dfile}") {
+        stage("lint-${service}") {
             agent {
                 kubernetes {
                     yamlFile 'jenkins-pod-hadolint.yaml'
@@ -17,13 +17,13 @@ def generateLintingStage(dfile) {
             steps {
                 // use hadolint container
                 container('hadolint') {
-                    sh "hadolint ${dfile}/Dockerfile | tee -a hadolint_${dfile}.txt"
+                    sh "hadolint ${service}/Dockerfile | tee -a hadolint_${service}.txt"
                 }
             }
             // store hadolint linting results
             post {
                 always {
-                    archiveArtifacts 'hadolint_${dfile}.txt'
+                    archiveArtifacts "hadolint_${service}.txt"
                 }
             }
         }
