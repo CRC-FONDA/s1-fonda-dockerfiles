@@ -40,6 +40,7 @@ pipeline {
                 steps {
                     generateLintingStagesMap
                 }
+            }
         }
 
         stage('Build and push images') {
