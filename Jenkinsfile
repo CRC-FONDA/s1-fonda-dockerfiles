@@ -22,7 +22,7 @@ pipeline {
             }
         }
 
-        stage('Build images')
+        stage('Build images') {
             steps {
                 echo "TODO"
             }
