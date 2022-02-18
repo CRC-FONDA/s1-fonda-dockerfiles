@@ -8,16 +8,36 @@ pipeline {
 
     stages {
         stage('Dockerfile linting') {
-            steps {
-                // use hadolint container
-                container('hadolint') {
-                    sh 'hadolint jenkins/* | tee -a hadolint_lint.txt'
+            parallel {
+                // Jenkins Dockerfile
+                stage('Jenkins') {
+                    steps {
+                        // use hadolint container
+                        container('hadolint') {
+                            sh 'hadolint jenkins/Dockerfile | tee -a hadolint_lint.txt'
+                        }
+                    }
+                    // store hadolint linting results
+                    post {
+                        always {
+                            archiveArtifacts 'hadolint_lint.txt'
+                        }
+                    }
                 }
-            }
-            // store hadolint linting results
-            post {
-                always {
-                    archiveArtifacts 'hadolint_lint.txt'
+                // Spark
+                stage('Spark') {
+                    steps {
+                        // use hadolint container
+                        container('hadolint') {
+                            sh 'hadolint spark/python-s3/Dockerfile | tee -a hadolint_lint.txt'
+                        }
+                    }
+                    // store hadolint linting results
+                    post {
+                        always {
+                            archiveArtifacts 'hadolint_lint.txt'
+                        }
+                    }
                 }
             }
         }
