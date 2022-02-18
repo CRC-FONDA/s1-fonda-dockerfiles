@@ -2,7 +2,7 @@
 // Add folders here
 def dockerfiles = ['jenkins', 'airflow']
 
-def generateLintingStagesMap = dockerfiles.collectEntries {
+def parallelLintingStagesMap = dockerfiles.collectEntries {
     ["${it}": generateLintingStage(it)]
 }
 
@@ -37,12 +37,8 @@ pipeline {
     stages {
         stage('Dockerfile linting') {
             steps {
-                parallel {
-                    script {
-                        for(dfile in dockerfile) {
-                            generateLintingStage ${dfile}
-                        }
-                    }       
+                script {
+                    parallel parallelLintingStagesMap
                 }
             }
         }
