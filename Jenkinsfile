@@ -20,6 +20,7 @@ pipeline {
                     archiveArtifacts 'hadolint_lint.txt'
                 }
             }
+        }
 
         stage('Build images')
             steps {
