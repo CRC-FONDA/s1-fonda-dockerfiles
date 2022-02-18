@@ -37,8 +37,12 @@ pipeline {
     stages {
         stage('Dockerfile linting') {
             steps {
-                script {
-                    parallel generateLintingStagesMap
+                parallel {
+                    script {
+                        for(dfile in dockerfile) {
+                            generateLintingStage ${dfile}
+                        }
+                    }       
                 }
             }
         }
