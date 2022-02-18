@@ -1,50 +1,45 @@
+// List containing all folders with Dockerfiles
+// Add folders here
+def dockerfiles = ['jenkins', 'airflow']
+
+def generateLintingStagesMap = dockerfiles.collectEntries {
+    ["${dfile}": generateLintingStage(dfile)]
+}
+
+def generateLintingStage(dfile) {
+    return
+        stage("lint-${dfile}") {
+            steps {
+                // use hadolint container
+                container('hadolint') {
+                    sh "hadolint ${dfile}/Dockerfile | tee -a hadolint_${dfile}.txt"
+                }
+            }
+            // store hadolint linting results
+            post {
+                always {
+                    archiveArtifacts 'hadolint_${dfile}.txt'
+                }
+            }
+        }
+}
+
+
 pipeline {
-    agent any // we specify the pods per stages
+    agent any // we specify the pods per stage
 
     stages {
         stage('Dockerfile linting') {
+
             parallel {
-                // Jenkins Dockerfile
-                stage('Jenkins') {
-                    agent {
-                        kubernetes {
-                            yamlFile 'jenkins-pod-hadolint.yaml'
-                        }
-                    }
-                    steps {
-                        // use hadolint container
-                        container('hadolint') {
-                            sh 'hadolint jenkins/Dockerfile | tee -a hadolint_jenkins.txt'
-                        }
-                    }
-                    // store hadolint linting results
-                    post {
-                        always {
-                            archiveArtifacts 'hadolint_jenkins.txt'
-                        }
+                agent {
+                    kubernetes {
+                        yamlFile 'jenkins-pod-hadolint.yaml'
                     }
                 }
-                // Spark
-                stage('Spark') {
-                    agent {
-                        kubernetes {
-                            yamlFile 'jenkins-pod-hadolint.yaml'
-                        }
-                    }
-                    steps {
-                        // use hadolint container
-                        container('hadolint') {
-                            sh 'hadolint spark/python-s3/Dockerfile | tee -a hadolint_spark.txt'
-                        }
-                    }
-                    // store hadolint linting results
-                    post {
-                        always {
-                            archiveArtifacts 'hadolint_spark.txt'
-                        }
-                    }
+                steps {
+                    generateLintingStagesMap
                 }
-            }
         }
 
         stage('Build and push images') {
