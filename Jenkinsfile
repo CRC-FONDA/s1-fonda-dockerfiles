@@ -12,11 +12,11 @@ def generateLintingStage(service) {
             container('hadolint') {
                 sh "hadolint ${service}/Dockerfile | tee -a hadolint_${service}.txt"
             }
+        }
             // store hadolint linting results
-            post {
-                always {
+        post {
+            always {
                     archiveArtifacts "hadolint_${service}.txt"
-                }
             }
         }
     }
