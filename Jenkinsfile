@@ -1,16 +1,16 @@
 pipeline {
-    agent {
-        // use kubernetes cluster
-        kubernetes {
-            yamlFile 'jenkins-pod.yaml'
-        }
-    }
+    agent any // we specify the pods per stages
 
     stages {
         stage('Dockerfile linting') {
             parallel {
                 // Jenkins Dockerfile
                 stage('Jenkins') {
+                    agent {
+                        kubernetes {
+                            yamlFile 'jenkins-pod.yaml'
+                        }
+                    }
                     steps {
                         // use hadolint container
                         container('hadolint') {
@@ -20,12 +20,17 @@ pipeline {
                     // store hadolint linting results
                     post {
                         always {
-                            archiveArtifacts 'hadolint_lint.txt'
+                            archiveArtifacts 'hadolint_jenkins.txt'
                         }
                     }
                 }
                 // Spark
                 stage('Spark') {
+                    agent {
+                        kubernetes {
+                            yamlFile 'jenkins-pod.yaml'
+                        }
+                    }
                     steps {
                         // use hadolint container
                         container('hadolint') {
@@ -35,7 +40,7 @@ pipeline {
                     // store hadolint linting results
                     post {
                         always {
-                            archiveArtifacts 'hadolint_lint.txt'
+                            archiveArtifacts 'hadolint_spark.txt'
                         }
                     }
                 }
