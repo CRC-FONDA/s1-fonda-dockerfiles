@@ -9,11 +9,6 @@ def parallelLintingStagesMap = dockerfiles.collectEntries {
 def generateLintingStage(service) {
     return {
         stage("lint-${service}") {
-            agent {
-                kubernetes {
-                    yamlFile 'jenkins-pod-hadolint.yaml'
-                }
-            }
             steps {
                 // use hadolint container
                 container('hadolint') {
@@ -36,6 +31,11 @@ pipeline {
 
     stages {
         stage('Dockerfile linting') {
+            agent {
+                kubernetes {
+                    yamlFile 'jenkins-pod-hadolint.yaml'
+                }
+            }
             steps {
                 script {
                     parallel parallelLintingStagesMap
