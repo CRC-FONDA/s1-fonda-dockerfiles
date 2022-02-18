@@ -9,11 +9,8 @@ def parallelLintingStagesMap = dockerfiles.collectEntries {
 def generateLintingStage(service) {
     return {
         stage("lint-${service}") {
-            steps {
-                // use hadolint container
-                container('hadolint') {
-                    sh "hadolint ${service}/Dockerfile | tee -a hadolint_${service}.txt"
-                }
+            container('hadolint') {
+                sh "hadolint ${service}/Dockerfile | tee -a hadolint_${service}.txt"
             }
             // store hadolint linting results
             post {
