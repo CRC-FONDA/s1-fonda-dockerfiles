@@ -36,12 +36,13 @@ def generateBuildingStage(service) {
                     credentialsId: 'fondahub-dockerhub', usernameVariable: 'DOCKERUSER', passwordVariable: 'DOCKERPASS'
                 ]]) {
                     sh """
-                    echo "$DOCKERPASS" | docker login -u "$DOCKERUSER" --password-stdin
-                     docker build ${service}/ -t fondahub/${service}:$GIT_COMMIT_SHORT
+                        echo "$DOCKERPASS" | docker login -u "$DOCKERUSER" --password-stdin
+                        GIT_COMMIT_SHORT=$(git rev-parse --short ${GIT_COMMIT})
+                        docker build ${service}/ -t fondahub/${service}:$GIT_COMMIT_SHORT
                         docker tag fondahub/${service}:$GIT_COMMIT_SHORT fondahub/${service}:latest
                         docker push fondahub/${service}:$GIT_COMMIT_SHORT
                         docker push fondahub/${service}:latest
-                        """
+                    """
                     }
             }
         }
@@ -50,13 +51,6 @@ def generateBuildingStage(service) {
 
 pipeline {
     agent none // we specify the pods per stage
-
-    environment {
-        // git short commit hash for container tag
-        GIT_COMMIT_SHORT = sh(
-                script: "printf \$(git rev-parse --short ${GIT_COMMIT})",
-                returnStdout: true)
-    }
 
     stages {
         stage('Dockerfile linting') {
