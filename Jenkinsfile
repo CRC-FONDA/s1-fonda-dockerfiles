@@ -29,22 +29,21 @@ def generateLintingStage(service) {
 
 def generateBuildingStage(service) {
     return {
-        podTemplate(yaml: readFile('jenkins-pod-docker.yaml')) {
-            node(POD_LABEL) {
-                stage("build-${service}") {
-                    container('docker') {
-                        withCredentials([[
-                            $class: 'UsernamePasswordMultiBinding',
-                            credentialsId: 'fondahub-dockerhub', usernameVariable: 'DOCKERUSER', passwordVariable: 'DOCKERPASS'
-                        ]]) {
-                            sh """
-                                echo "$DOCKERPASS" | docker login -u "$DOCKERUSER" --password-stdin
-                                docker build ${service}/ -t fondahub/${service}:${GIT_COMMIT[0..7]}
-                                docker tag fondahub/${service}:${GIT_COMMIT[0..7]} fondahub/${service}:latest
-                                docker push fondahub/${service}:${GIT_COMMIT[0..7]}
-                                docker push fondahub/${service}:latest
-                            """
-                            }
+        node(POD_LABEL) {
+            stage("build-${service}") {
+                container('docker') {
+                    withCredentials([[
+                        $class: 'UsernamePasswordMultiBinding',
+                        credentialsId: 'fondahub-dockerhub', usernameVariable: 'DOCKERUSER', passwordVariable: 'DOCKERPASS'
+                    ]])
+                    {
+                    sh """
+                        echo "$DOCKERPASS" | docker login -u "$DOCKERUSER" --password-stdin
+                        docker build ${service}/ -t fondahub/${service}:${GIT_COMMIT[0..7]}
+                        docker tag fondahub/${service}:${GIT_COMMIT[0..7]} fondahub/${service}:latest
+                        docker push fondahub/${service}:${GIT_COMMIT[0..7]}
+                        docker push fondahub/${service}:latest
+                    """
                     }
                 }
             }
@@ -74,11 +73,11 @@ pipeline {
             //when {
             //    branch 'main'
             //}
-            //agent {
-            //    kubernetes {
-            //        yamlFile 'jenkins-pod-docker.yaml'
-            //    }
-            //}
+            agent {
+                kubernetes {
+                    yamlFile 'jenkins-pod-docker.yaml'
+                }
+            }
             steps {
                 script {
                     parallel parallelBuildingStagesMap
