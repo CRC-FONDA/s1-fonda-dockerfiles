@@ -10,13 +10,15 @@ def generateLintingStage(service) {
     return {
         stage("lint-${service}") {
             container('hadolint') {
-                sh "hadolint ${service}/Dockerfile | tee -a hadolint_${service}.txt"
+                sh "hadolint --format json ${service}/Dockerfile | tee -a hadolint_${service}.json"
             }
         }
             // store hadolint linting results
         post {
             always {
-                    archiveArtifacts "hadolint_${service}.txt"
+                    recordIssues(tools: [
+                        hadoLint(
+                            pattern: "hadolint_${service}.json")])
             }
         }
     }
