@@ -67,6 +67,12 @@ def generateBuildingStage(service) {
     }
 }
 
+/**
+* The actual declerative pipeline description.
+
+* The helper methods are enclosed in 'script' directives in order to 
+* support the scripted pipeline syntax.
+*/
 pipeline {
     agent {
         kubernetes {
