@@ -61,11 +61,11 @@ pipeline {
 
     stages {
         stage('Dockerfile linting') {
-            agent {
-                kubernetes {
-                    yamlFile 'jenkins-pod-hadolint.yaml'
-                }
-            }
+            //agent {
+            //    kubernetes {
+            //        yamlFile 'jenkins-pod-hadolint.yaml'
+            //    }
+            //}
             steps {
                 script {
                     parallel parallelLintingStagesMap
