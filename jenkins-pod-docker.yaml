@@ -15,3 +15,9 @@ spec:
       env:
         - name: DOCKER_HOST
           value: tcp://localhost:2375
+    - name: hadolint
+      image: hadolint/hadolint:latest-debian
+      imagePullPolicy: Always
+      command:
+        - cat
+      tty: true
