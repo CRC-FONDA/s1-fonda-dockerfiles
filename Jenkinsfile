@@ -31,19 +31,21 @@ def generateBuildingStage(service) {
     return {
         node(POD_LABEL) {
             stage("build-${service}") {
-                container('docker') {
-                    withCredentials([[
-                        $class: 'UsernamePasswordMultiBinding',
-                        credentialsId: 'fondahub-dockerhub', usernameVariable: 'DOCKERUSER', passwordVariable: 'DOCKERPASS'
-                    ]])
-                    {
-                    sh """
-                        echo "$DOCKERPASS" | docker login -u "$DOCKERUSER" --password-stdin
-                        docker build ${service}/ -t fondahub/${service}:${GIT_COMMIT[0..7]}
-                        docker tag fondahub/${service}:${GIT_COMMIT[0..7]} fondahub/${service}:latest
-                        docker push fondahub/${service}:${GIT_COMMIT[0..7]}
-                        docker push fondahub/${service}:latest
-                    """
+                steps {
+                    container('docker') {
+                        withCredentials([[
+                            $class: 'UsernamePasswordMultiBinding',
+                            credentialsId: 'fondahub-dockerhub', usernameVariable: 'DOCKERUSER', passwordVariable: 'DOCKERPASS'
+                        ]])
+                        {
+                        sh """
+                            echo "$DOCKERPASS" | docker login -u "$DOCKERUSER" --password-stdin
+                            docker build ${service}/ -t fondahub/${service}:${GIT_COMMIT[0..7]}
+                            docker tag fondahub/${service}:${GIT_COMMIT[0..7]} fondahub/${service}:latest
+                            docker push fondahub/${service}:${GIT_COMMIT[0..7]}
+                            docker push fondahub/${service}:latest
+                        """          
+                        }
                     }
                 }
             }
