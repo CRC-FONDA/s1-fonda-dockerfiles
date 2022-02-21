@@ -32,6 +32,7 @@ def generateBuildingStage(service) {
         node(POD_LABEL) {
             stage("build-${service}") {
                     container('docker') {
+                        checkout scm
                         withCredentials([[
                             $class: 'UsernamePasswordMultiBinding',
                             credentialsId: 'fondahub-dockerhub', usernameVariable: 'DOCKERUSER', passwordVariable: 'DOCKERPASS'
