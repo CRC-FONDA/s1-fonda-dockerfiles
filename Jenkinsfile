@@ -9,21 +9,30 @@ def parallelLintingStagesMap = dockerfiles.collectEntries {
 def generateLintingStage(service) {
     return {
         stage("lint-${service}") {
-            container('hadolint') {
-                sh "hadolint --format json ${service}/Dockerfile | tee -a hadolint_${service}.json"
-            }
-            // store hadolint linting results
-            post {
-                always {
-                        archiveArtifacts "hadolint_${service}.txt"
-                        recordIssues(tools: [
-                            hadoLint(
-                                pattern: "hadolint_${service}.json")])
+            try {
+                container('hadolint') {
+                    sh "hadolint --format json ${service}/Dockerfile | tee -a hadolint_${service}.json"
                 }
+            } finally {
+                archiveArtifacts "hadolint_${service}.txt"
+                recordIssues(tools: [
+                    hadoLint(
+                        pattern: "hadolint_${service}.json")])
             }
         }
     }
 }
+//            // store hadolint linting results
+//        post {
+//            always {
+//                    archiveArtifacts "hadolint_${service}.txt"
+//                    recordIssues(tools: [
+//                        hadoLint(
+//                            pattern: "hadolint_${service}.json")])
+//            }
+//        }
+//    }
+//}
 
 
 pipeline {
