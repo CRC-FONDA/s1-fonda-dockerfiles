@@ -3,8 +3,9 @@ FONDA Dockerfile
 
 This repository contains Dockerfiles used for different infrastructure components in FONDA.
 
-_TODO_:
-- [ ] Integrate in Jenkins and build images automatically on changes
+All images are automatically build on new changes and pushed with the :latest tag.
+
+In addition, the images are furthermore tagged with the current Git hash to enable rollbacks.
 
 Dockerfiles
 -----------
