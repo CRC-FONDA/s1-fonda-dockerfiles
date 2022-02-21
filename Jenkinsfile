@@ -76,7 +76,7 @@ def generateBuildingStage(service) {
 pipeline {
     agent {
         kubernetes {
-            yamlFile 'jenkins-pod-docker.yaml'
+            yamlFile 'jenkins-pod.yaml'
         }
     }
 
