@@ -14,7 +14,7 @@ def generateLintingStage(service) {
                     sh "hadolint --format json ${service}/Dockerfile | tee -a hadolint_${service}.json"
                 }
             } finally {
-                archiveArtifacts "hadolint_${service}.txt"
+                archiveArtifacts "hadolint_${service}.json"
                 recordIssues(tools: [
                     hadoLint(
                         pattern: "hadolint_${service}.json")])
@@ -22,18 +22,6 @@ def generateLintingStage(service) {
         }
     }
 }
-//            // store hadolint linting results
-//        post {
-//            always {
-//                    archiveArtifacts "hadolint_${service}.txt"
-//                    recordIssues(tools: [
-//                        hadoLint(
-//                            pattern: "hadolint_${service}.json")])
-//            }
-//        }
-//    }
-//}
-
 
 pipeline {
     agent none // we specify the pods per stage
