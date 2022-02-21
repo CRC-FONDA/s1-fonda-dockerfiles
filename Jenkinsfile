@@ -31,7 +31,6 @@ def generateBuildingStage(service) {
     return {
         node(POD_LABEL) {
             stage("build-${service}") {
-                steps {
                     container('docker') {
                         withCredentials([[
                             $class: 'UsernamePasswordMultiBinding',
@@ -47,7 +46,6 @@ def generateBuildingStage(service) {
                         """          
                         }
                     }
-                }
             }
         }
     }
