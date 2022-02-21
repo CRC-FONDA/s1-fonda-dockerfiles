@@ -38,6 +38,7 @@ def generateBuildingStage(service) {
                         ]])
                         {
                         sh """
+                            ls -lah 
                             echo "$DOCKERPASS" | docker login -u "$DOCKERUSER" --password-stdin
                             docker build ${service}/ -t fondahub/${service}:${GIT_COMMIT[0..7]}
                             docker tag fondahub/${service}:${GIT_COMMIT[0..7]} fondahub/${service}:latest
