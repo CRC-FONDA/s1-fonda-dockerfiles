@@ -54,7 +54,12 @@ def generateBuildingStage(service) {
 }
 
 pipeline {
-    agent none // we specify the pods per stage
+    //agent none // we specify the pods per stage
+    agent {
+        kubernetes {
+            yamlFile 'jenkins-pod-docker.yaml'
+        }
+    }
 
     stages {
         stage('Dockerfile linting') {
@@ -75,11 +80,6 @@ pipeline {
             //when {
             //    branch 'main'
             //}
-            agent {
-                kubernetes {
-                    yamlFile 'jenkins-pod-docker.yaml'
-                }
-            }
             steps {
                 script {
                     parallel parallelBuildingStagesMap
