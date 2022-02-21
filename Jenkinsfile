@@ -55,8 +55,8 @@ pipeline {
         // git short commit hash for container tag
         GIT_COMMIT_SHORT = sh(
                 script: "printf \$(git rev-parse --short ${GIT_COMMIT})",
-                returnStdout: true
-        )
+                returnStdout: true)
+    }
 
     stages {
         stage('Dockerfile linting') {
