@@ -5,7 +5,7 @@ This repository contains Dockerfiles used for different infrastructure component
 
 All images are automatically build on new changes and pushed with the :latest tag.
 
-In addition, the images are furthermore tagged with the current Git hash to enable rollbacks.
+In addition, the images are also tagged with the current Git hash to enable rollbacks.
 
 Dockerfiles
 -----------
