@@ -10,6 +10,12 @@ def parallelBuildingStagesMap = dockerfiles.collectEntries {
     ["${it}": generateBuildingStage(it)]
 }
 
+/**
+* Generates a stage for each folder listed in 'dockerfiles' which lints the corresponding
+* Dockerfiles.
+*
+* The analysis results are stored on Jenkins.
+*/
 def generateLintingStage(service) {
     return {
         stage("lint-${service}") {
@@ -27,6 +33,15 @@ def generateLintingStage(service) {
     }
 }
 
+/**
+* Generates a stage for each folder listed in 'dockerfiles' to build and push the 
+* respective container image to the 'fondahub' DockerHub organization (https://hub.docker.com/orgs/fondahub).
+*
+* Container images are named 'fondahub/<service>' and tagged with the 'latest' tag as well as the current git commit hash (shorted).
+* We are using the node(POD_LABEL) directive to start an isolated pod for each building process  
+*
+* Note: The images are only built and pushed for changes on the 'main' branch.
+*/
 def generateBuildingStage(service) {
     return {
         node(POD_LABEL) {
@@ -39,7 +54,6 @@ def generateBuildingStage(service) {
                         ]])
                         {
                         sh """
-                            ls -lah 
                             echo "$DOCKERPASS" | docker login -u "$DOCKERUSER" --password-stdin
                             docker build ${service}/ -t fondahub/${service}:${GIT_COMMIT[0..7]}
                             docker tag fondahub/${service}:${GIT_COMMIT[0..7]} fondahub/${service}:latest
@@ -54,7 +68,6 @@ def generateBuildingStage(service) {
 }
 
 pipeline {
-    //agent none // we specify the pods per stage
     agent {
         kubernetes {
             yamlFile 'jenkins-pod-docker.yaml'
@@ -63,11 +76,6 @@ pipeline {
 
     stages {
         stage('Dockerfile linting') {
-            //agent {
-            //    kubernetes {
-            //        yamlFile 'jenkins-pod-hadolint.yaml'
-            //    }
-            //}
             steps {
                 script {
                     parallel parallelLintingStagesMap
@@ -77,9 +85,9 @@ pipeline {
 
         stage('Build and push images') {
             // only build/push images of main branch
-            //when {
-            //    branch 'main'
-            //}
+            when {
+                branch 'main'
+            }
             steps {
                 script {
                     parallel parallelBuildingStagesMap
