@@ -7,3 +7,4 @@ blueocean:latest
 github-branch-source:latest
 sonar:latest
 warnings-ng:latest
+jacoco:latest
