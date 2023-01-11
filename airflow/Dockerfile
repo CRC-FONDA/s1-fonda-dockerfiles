@@ -1,5 +1,5 @@
-# fondahub/airflow:2.0.0
-FROM apache/airflow:2.0.0-python3.8
+# fondahub/airflow:2.2.5-python3.8
+FROM apache/airflow:2.2.5-python3.8
 USER root
 RUN apt-get update --fix-missing
 RUN apt-get install -y build-essential python3-dev python2.7-dev \

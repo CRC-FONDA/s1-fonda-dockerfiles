@@ -1,5 +1,4 @@
-#urrently not working on airflow 2.0.0
-#airflow-exporter
+airflow-exporter
 ldap3
 python-ldap
-google-cloud-bigquery==2.6.2  # see https://github.com/googleapis/python-bigquery/issues/441
+cwl-airflow
